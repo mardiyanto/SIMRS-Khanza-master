@@ -1363,6 +1363,13 @@ public final class DlgReg extends javax.swing.JDialog {
         jLabel31 = new widget.Label();
         NoKa = new widget.TextBox();
         btnCekBridging = new widget.Button();
+        nomor_antrian = new javax.swing.JLabel();
+        loket_antrian = new javax.swing.JComboBox<>();
+        sisa_antrian = new widget.Label();
+        Panggil = new widget.Button();
+        Ulang = new widget.Button();
+	jLabel12 = new widget.Label();
+	jLabel25 = new widget.Label();
         ChkInput = new widget.CekBox();
         TabRawat = new javax.swing.JTabbedPane();
         Scroll = new widget.ScrollPane();
@@ -6871,7 +6878,85 @@ public final class DlgReg extends javax.swing.JDialog {
         });
         FormInput.add(btnCekBridging);
         btnCekBridging.setBounds(852, 102, 28, 23);
+nomor_antrian.setFont(new java.awt.Font("Liberation Sans", 1, 48)); // NOI18N
+        nomor_antrian.setForeground(new java.awt.Color(204, 0, 0));
+        nomor_antrian.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        nomor_antrian.setText("0");
+        nomor_antrian.setToolTipText("Display nomor Antrian");
+        nomor_antrian.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        nomor_antrian.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        nomor_antrian.setName("nomor_antrian"); // NOI18N
+        FormInput.add(nomor_antrian);
+        nomor_antrian.setBounds(900, 40, 150, 70);
 
+        jLabel12.setText("Loket :");
+        jLabel12.setName("jLabel12"); // NOI18N
+        FormInput.add(jLabel12);
+        jLabel12.setBounds(900, 130, 40, 23);
+
+        loket_antrian.setFont(new java.awt.Font("Liberation Sans", 1, 13)); // NOI18N
+        loket_antrian.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "LOKET 1", "LOKET 2", "LOKET 3", "LOKET 4", "LOKET 5" }));
+        loket_antrian.setName("loket_antrian"); // NOI18N
+        loket_antrian.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loket_antrianActionPerformed(evt);
+            }
+        });
+        FormInput.add(loket_antrian);
+        loket_antrian.setBounds(942, 130, 105, 20);
+
+        jLabel25.setText("SISA ANTRIAN :");
+        jLabel25.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel25.setName("jLabel25"); // NOI18N
+        FormInput.add(jLabel25);
+        jLabel25.setBounds(1060, 130, 90, 23);
+
+        sisa_antrian.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        sisa_antrian.setText("0");
+        sisa_antrian.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        sisa_antrian.setName("sisa_antrian"); // NOI18N
+        FormInput.add(sisa_antrian);
+        sisa_antrian.setBounds(1155, 130, 50, 23);
+
+        Ulang.setIcon(new javax.swing.ImageIcon(getClass().getResource("/picture/refresh.png"))); // NOI18N
+        Ulang.setMnemonic('M');
+        Ulang.setText("PANGGIL ULANG");
+        Ulang.setToolTipText("Alt+M");
+        Ulang.setGlassColor(new java.awt.Color(153, 255, 204));
+        Ulang.setName("Ulang"); // NOI18N
+        Ulang.setPreferredSize(new java.awt.Dimension(100, 30));
+        Ulang.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                UlangActionPerformed(evt);
+            }
+        });
+        Ulang.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                UlangKeyPressed(evt);
+            }
+        });
+        FormInput.add(Ulang);
+        Ulang.setBounds(1060, 90, 180, 30);
+
+        Panggil.setIcon(new javax.swing.ImageIcon(getClass().getResource("/picture/user.png"))); // NOI18N
+        Panggil.setMnemonic('M');
+        Panggil.setText("PANGGIL BERIKUTNYA");
+        Panggil.setToolTipText("Alt+M");
+        Panggil.setGlassColor(new java.awt.Color(153, 255, 204));
+        Panggil.setName("Panggil"); // NOI18N
+        Panggil.setPreferredSize(new java.awt.Dimension(100, 30));
+        Panggil.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PanggilActionPerformed(evt);
+            }
+        });
+        Panggil.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                PanggilKeyPressed(evt);
+            }
+        });
+        FormInput.add(Panggil);
+        Panggil.setBounds(1060, 50, 180, 30);
         PanelInput.add(FormInput, java.awt.BorderLayout.CENTER);
 
         ChkInput.setIcon(new javax.swing.ImageIcon(getClass().getResource("/picture/143.png"))); // NOI18N
@@ -14590,7 +14675,30 @@ private void MnLaporanRekapKunjunganBulananPoliActionPerformed(java.awt.event.Ac
             }
         }
     }//GEN-LAST:event_MnSkorStewardPascaAnestesiActionPerformed
+ private void PanggilActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        if(Sequel.cariIsi("SELECT nomor from antripendaftaran_nomor WHERE status='0' and date_format(jam, '%Y-%m-%d')=current_date ORDER BY jam ASC LIMIT 1").equals("")){
+            JOptionPane.showMessageDialog(null,"Antrian sudah habis mbak, jangan di pencet terus");
+        }else{
+            nomor_antrian.setText(Sequel.cariIsi("SELECT nomor from antripendaftaran_nomor WHERE status='0' and date_format(jam, '%Y-%m-%d')=current_date ORDER BY nomor ASC LIMIT 1"));
+            sisa_antrian.setText(Sequel.cariIsi("SELECT (COUNT(nomor)-1), status from antripendaftaran_nomor WHERE status='0' and date_format(jam, '%Y-%m-%d')=current_date "));
+            Sequel.mengedit("antripendaftaran_nomor","nomor='"+nomor_antrian.getText()+"' and date_format(jam,'%Y-%m-%d')=current_date","status='1',loket='"+loket_antrian.getSelectedItem().toString()+"'");
+            //and date_format(jam,'%Y-%m-%d')=current_date
+        }
+    } 
+    private void PanggilKeyPressed(java.awt.event.KeyEvent evt) {                                   
+        // TODO add your handling code here:
+    }  
+     private void loket_antrianActionPerformed(java.awt.event.ActionEvent evt) {                                              
+        // TODO add your handling code here:
+    } 
+        private void UlangActionPerformed(java.awt.event.ActionEvent evt) {                                      
+        // TODO add your handling code here:
+        Sequel.mengedit("antripendaftaran_nomor","nomor='"+nomor_antrian.getText()+"'","status='1', loket='"+loket_antrian.getSelectedItem().toString()+"'");
+    }                                     
 
+    private void UlangKeyPressed(java.awt.event.KeyEvent evt) {                                 
+        // TODO add your handling code here:
+    }  
     private void MnSkorBromagePascaAnestesiActionPerformed(java.awt.event.ActionEvent evt) {                                                           
         if(tabMode.getRowCount()==0){
             JOptionPane.showMessageDialog(null,"Maaf, data registrasi sudah habis...!!!!");
@@ -15645,6 +15753,13 @@ private void MnLaporanRekapKunjunganBulananPoliActionPerformed(java.awt.event.Ac
     private javax.swing.JMenuItem MnUrutTanggalAsc1;
     private javax.swing.JMenuItem MnUrutTanggalDesc;
     private javax.swing.JMenuItem MnUrutTanggalDesc1;
+    private javax.swing.JLabel nomor_antrian;
+    private javax.swing.JComboBox<String> loket_antrian;
+    private widget.Button Panggil;
+    private widget.Label sisa_antrian;
+    private widget.Button Ulang;
+    private widget.Label jLabel12;
+    private widget.Label jLabel25;
     private widget.TextBox NoBalasan;
     private widget.TextBox NoKa;
     private widget.TextBox NoTelp;
@@ -16598,6 +16713,8 @@ private void MnLaporanRekapKunjunganBulananPoliActionPerformed(java.awt.event.Ac
             } 
             emptTeks();                
         }  
+        Sequel.menyimpan2("antripendaftaran","'"+nomor_antrian.getText()+"','"+TNoRw.getText()+"','"+Sequel.cariIsi("select jam from antripendaftaran_nomor where nomor='"+nomor_antrian.getText()+"' and date_format(jam, '%Y-%m-%d')=current_date")+"','"+Valid.SetTgl(DTPReg.getSelectedItem()+"")+" "+CmbJam.getSelectedItem()+":"+CmbMenit.getSelectedItem()+":"+CmbDetik.getSelectedItem()+"'","nomor");
+
     }
 
     private void billingprasial() {

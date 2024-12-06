@@ -1360,39 +1360,75 @@ public final class sekuel {
     
     public boolean cekTanggalRegistrasi(String tanggalregistrasi,String tanggalinputdata){
         bool=false;
-        try {
-            waktumulai = formattanggal.parse(tanggalregistrasi);
-            kegiatan = formattanggal.parse(tanggalinputdata);
-            bedawaktu = (kegiatan.getTime()-waktumulai.getTime())/1000;
-            if(bedawaktu<0){
-                bool=false;
-                JOptionPane.showMessageDialog(null,"Maaf, jam input data / perubahan data minimal di jam "+tanggalregistrasi+" !");
-            }else{
-                bool=true;
-            }
-        } catch (Exception ex) {
-            bool=false;
-            System.out.println("Notif : "+ex);
-        }
+ // Parsing tanggal, hanya untuk memastikan input format tanggal valid
+//        try {
+//            waktumulai = formattanggal.parse(tanggalregistrasi);
+//            kegiatan = formattanggal.parse(tanggalinputdata);
+//            bedawaktu = (kegiatan.getTime()-waktumulai.getTime())/1000;
+//            if(bedawaktu<0){
+//                bool=false;
+//                JOptionPane.showMessageDialog(null,"Maaf, jam input data / perubahan data minimal di jam "+tanggalregistrasi+" !");
+//            }else{
+// Jika parsing berhasil, set bool ke true
+//                bool=true;
+//            }
+//        } catch (Exception ex) {
+//            bool=false;
+//            System.out.println("Notif : "+ex);
+//        }
+try {
+        // Parsing tanggal, hanya untuk memastikan input format tanggal valid
+        waktumulai = formattanggal.parse(tanggalregistrasi);
+        kegiatan = formattanggal.parse(tanggalinputdata);
+
+        // Jika parsing berhasil, set bool ke true
+        bool = true;
+    } catch (Exception ex) {
+        // Jika terjadi kesalahan saat parsing, set bool ke false
+        bool = false;
+        System.out.println("Notif : " + ex);
+    }
         return bool;
     }
     
     public boolean cekTanggal48jam(String tanggalmulai,String tanggalinputdata){
         bool=false;
-        try {
-            waktumulai = formattanggal.parse(tanggalmulai);
-            kegiatan = formattanggal.parse(tanggalinputdata);
-            bedawaktu = (kegiatan.getTime()-waktumulai.getTime())/1000;
-            if(bedawaktu>172800){
-                bool=false;
-                JOptionPane.showMessageDialog(null,"Maaf, perubahan data / penghapusan data tidak boleh lebih dari 2 x 24 jam !");
-            }else{
-                bool=true;
-            }
-        } catch (Exception ex) {
-            bool=false;
-            System.out.println("Notif : "+ex);
+//        try {
+//            waktumulai = formattanggal.parse(tanggalmulai);
+//            kegiatan = formattanggal.parse(tanggalinputdata);
+//            bedawaktu = (kegiatan.getTime()-waktumulai.getTime())/1000;
+//            if(bedawaktu>172800){
+//                bool=false;
+//                JOptionPane.showMessageDialog(null,"Maaf, perubahan data / penghapusan data tidak boleh lebih dari 2 x 24 jam !");
+//            }else{
+//                bool=true;
+//            }
+//        } catch (Exception ex) {
+//            bool=false;
+//            System.out.println("Notif : "+ex);
+//        }
+    try {
+        // Parsing tanggal
+        waktumulai = formattanggal.parse(tanggalmulai);
+        kegiatan = formattanggal.parse(tanggalinputdata);
+
+        // Hitung selisih waktu dalam detik
+        bedawaktu = (kegiatan.getTime() - waktumulai.getTime()) / 1000;
+
+        // Jumlah detik dalam 4 bulan (4 × 30 hari × 24 jam × 60 menit × 60 detik)
+        long empatBulanDalamDetik = 4L * 30 * 24 * 60 * 60;
+
+        // Pengecekan apakah selisih waktu lebih dari 4 bulan
+        if (bedawaktu > empatBulanDalamDetik) {
+            bool = false;
+            JOptionPane.showMessageDialog(null, "Maaf, perubahan data / penghapusan data tidak boleh lebih dari 4 bulan!");
+        } else {
+            bool = true;
         }
+    } catch (Exception ex) {
+        bool = false;
+        System.out.println("Notif : " + ex);
+    }
         return bool;
     }
     
