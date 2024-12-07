@@ -250,9 +250,9 @@ public final class DlgKasirRalan extends javax.swing.JDialog {
             Beban_Jasa_Medik_Paramedis_Tindakan_Ralan="",Utang_Jasa_Medik_Paramedis_Tindakan_Ralan="",Beban_KSO_Tindakan_Ralan="",Utang_KSO_Tindakan_Ralan="",
             Beban_Jasa_Sarana_Tindakan_Ralan="",Utang_Jasa_Sarana_Tindakan_Ralan="",HPP_BHP_Tindakan_Ralan="",Persediaan_BHP_Tindakan_Ralan="",terbitsep="",
             Beban_Jasa_Menejemen_Tindakan_Ralan="",Utang_Jasa_Menejemen_Tindakan_Ralan="",tampildiagnosa="",finger="",norawatdipilih="",normdipilih="",
-            variabel="";
+            variabel="",sepralan="",seppeserta="";
     public DlgBilingRalan billing=new DlgBilingRalan(null,false);
-    private int i=0,pilihan=0,sudah=0,jmlparsial=0;
+    private int i=0,pilihan=0,sudah=0,jmlparsial=0,adasepralan=0,tidakadasepralan=0,adaseppeserta=0,tidakadaseppeserta=0;
     public DlgKamarInap kamarinap=new DlgKamarInap(null,false);
     private DlgRawatJalan dlgrwjl2=new DlgRawatJalan(null,false);
     private boolean semua;
@@ -275,7 +275,7 @@ public final class DlgKasirRalan extends javax.swing.JDialog {
             "Kode Dokter","Dokter Dituju","No.RM","Pasien",
             "Poliklinik","Penanggung Jawab","Alamat P.J.","Hubungan P.J.",
             "Biaya Reg","Jenis Bayar","Status","No.Rawat","Tanggal",
-            "Jam","No.Reg","Status Bayar","Stts Poli","Kd PJ","Kd Poli","No.Telp Pasien"}){
+            "Jam","No.Reg","Status Bayar","Stts Poli","Kd PJ","Kd Poli","No.Telp Pasien","No. SEP", "Peserta"}){
               @Override public boolean isCellEditable(int rowIndex, int colIndex){return false;}
         };
         tbKasirRalan.setModel(tabModekasir);
@@ -327,6 +327,10 @@ public final class DlgKasirRalan extends javax.swing.JDialog {
                 column.setMaxWidth(0);
             }else if(i==19){
                 column.setPreferredWidth(95);
+            }else if(i==20){
+                column.setPreferredWidth(140);
+            }else if(i==21){
+                column.setPreferredWidth(130);
             }
         }
         try {
@@ -15059,13 +15063,27 @@ private void MnDataPemberianObatActionPerformed(java.awt.event.ActionEvent evt) 
                 }
                 
                 rskasir=pskasir.executeQuery();
+                adasepralan=0;tidakadasepralan=0;adaseppeserta=0;tidakadaseppeserta=0;
                 while(rskasir.next()){
+                    sepralan=Sequel.cariIsi("select if(count(bridging_sep.no_rawat)>0,bridging_sep.no_sep,'Tidak Ada') from bridging_sep where bridging_sep.no_rawat=?",rskasir.getString("no_rawat"));
+                    seppeserta=Sequel.cariIsi("select if(count(bridging_sep.no_rawat)>0,bridging_sep.peserta,'Tidak Ada') from bridging_sep where bridging_sep.no_rawat=?",rskasir.getString("no_rawat"));
+                    if(sepralan.equals("Ada")){
+                        adasepralan++;
+                    }else{
+                        tidakadasepralan++;
+                    }
+                    if(seppeserta.equals("Ada")){
+                        adaseppeserta++;
+                    }else{
+                        tidakadaseppeserta++;
+                    }
+
                     tabModekasir.addRow(new String[] {
                         rskasir.getString(5),rskasir.getString(6),rskasir.getString(7),rskasir.getString(8)+" ("+rskasir.getString("umur")+")",
                         rskasir.getString(9),rskasir.getString(10),rskasir.getString(11),rskasir.getString(12),Valid.SetAngka(rskasir.getDouble(13)),
                         rskasir.getString("png_jawab"),rskasir.getString(14),rskasir.getString("no_rawat"),rskasir.getString("tgl_registrasi"),
                         rskasir.getString("jam_reg"),rskasir.getString(1),rskasir.getString("status_bayar"),rskasir.getString("status_poli"),
-                        rskasir.getString("kd_pj"),rskasir.getString("kd_poli"),rskasir.getString("no_tlp")
+                        rskasir.getString("kd_pj"),rskasir.getString("kd_poli"),rskasir.getString("no_tlp"),sepralan,seppeserta
                     });
                 }                
             } catch(Exception e){
