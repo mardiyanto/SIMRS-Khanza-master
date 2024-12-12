@@ -1,6 +1,6 @@
 <?php
 // Koneksi ke database
-$conn = new mysqli("171.16.3.6", "aka", "Rsw1sm4r1n1", "sik_back");
+$conn = new mysqli("localhost", "root", "", "sik_back");
 if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
 }

@@ -1,8 +1,8 @@
 <?php
 // Koneksi ke database
-$host = "171.16.3.6";
-$username = "aka";
-$password = "Rsw1sm4r1n1";
+$host = "localhost";
+$username = "root";
+$password = "";
 $dbname = "sik"; // Ganti dengan nama database Anda
 
 $conn = new mysqli($host, $username, $password, $dbname);
