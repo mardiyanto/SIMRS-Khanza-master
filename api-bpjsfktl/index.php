@@ -698,7 +698,7 @@
                                                 http_response_code(201);
                                             }else if($booking['status']=='Belum'){
                                                 $interval  = getOne2("select TIMESTAMPDIFF(MINUTE,'$booking[tanggalperiksa] $booking[jampraktek]:00','$tanggalchekcin') AS difference");
-                                                if($interval>=60){
+                                                if($interval>=180){
                                                     $response = array(
                                                         'metadata' => array(
                                                             'message' => 'Chekin Anda sudah expired. Silahkan konfirmasi ke loket pendaftaran',
