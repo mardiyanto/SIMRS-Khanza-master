@@ -232,7 +232,7 @@ public final class akses {
             metode_pembayaran_bankmandiri=false,bank_tujuan_transfer_bankmandiri=false,kodetransaksi_tujuan_transfer_bankmandiri=false,konsultasi_medik=false,jawaban_konsultasi_medik=false,
             pcare_cek_alergi=false,pcare_cek_prognosa=false,data_sasaran_usiaproduktif=false,data_sasaran_usialansia=false,skrining_perilaku_merokok_sekolah_remaja=false,
             skrining_kekerasan_pada_perempuan=false,skrining_obesitas=false,skrining_risiko_kanker_payudara=false,skrining_risiko_kanker_paru=false,skrining_tbc=false,
-            skrining_kesehatan_gigi_mulut_remaja=false,penilaian_awal_keperawatan_ranap_bayi=false,booking_mcu_perusahaan=false,catatan_observasi_restrain_nonfarma=false,
+            skrining_kesehatan_gigi_mulut_remaja=false,penilaian_awal_keperawatan_ranap_bayi=false,booking_mcu_perusahaan=false,satu_sehat_kirim_questionnaire_response=false,catatan_observasi_restrain_nonfarma=false,
             catatan_observasi_ventilator=false,catatan_anestesi_sedasi=false,skrining_puma=false,satu_sehat_kirim_careplan=false,satu_sehat_kirim_medicationstatement=false,
             skrining_adiksi_nikotin=false,skrining_thalassemia=false,skrining_instrumen_sdq=false,skrining_instrumen_srq=false,checklist_pemberian_fibrinolitik=false,
             skrining_kanker_kolorektal=false,dapur_pemesanan=false,bayar_pesan_dapur=false,hutang_dapur=false,titip_faktur_dapur=false,validasi_tagihan_dapur=false,
@@ -1321,6 +1321,7 @@ public final class akses {
                         akses.skrining_kesehatan_gigi_mulut_remaja=true;
                         akses.penilaian_awal_keperawatan_ranap_bayi=true;
                         akses.booking_mcu_perusahaan=true;
+                        akses.satu_sehat_kirim_questionnaire_response=true;
                         akses.catatan_observasi_restrain_nonfarma=true;
                         akses.catatan_observasi_ventilator=true;
                         akses.catatan_anestesi_sedasi=true;
@@ -2419,6 +2420,7 @@ public final class akses {
                         akses.skrining_kesehatan_gigi_mulut_remaja=rs2.getBoolean("skrining_kesehatan_gigi_mulut_remaja");
                         akses.penilaian_awal_keperawatan_ranap_bayi=rs2.getBoolean("penilaian_awal_keperawatan_ranap_bayi");
                         akses.booking_mcu_perusahaan=rs2.getBoolean("booking_mcu_perusahaan");
+                        akses.satu_sehat_kirim_questionnaire_response=rs2.getBoolean("satu_sehat_kirim_questionnaire_response");
                         akses.catatan_observasi_restrain_nonfarma=rs2.getBoolean("catatan_observasi_restrain_nonfarma");
                         akses.catatan_observasi_ventilator=rs2.getBoolean("catatan_observasi_ventilator");
                         akses.catatan_anestesi_sedasi=rs2.getBoolean("catatan_anestesi_sedasi");
@@ -3515,6 +3517,7 @@ public final class akses {
                         akses.skrining_kesehatan_gigi_mulut_remaja=false;
                         akses.penilaian_awal_keperawatan_ranap_bayi=false;
                         akses.booking_mcu_perusahaan=false;
+                        akses.satu_sehat_kirim_questionnaire_response=false;
                         akses.catatan_observasi_restrain_nonfarma=false;
                         akses.catatan_observasi_ventilator=false;
                         akses.catatan_anestesi_sedasi=false;
@@ -4634,6 +4637,7 @@ public final class akses {
         akses.skrining_kesehatan_gigi_mulut_remaja=false;
         akses.penilaian_awal_keperawatan_ranap_bayi=false;
         akses.booking_mcu_perusahaan=false;
+        akses.satu_sehat_kirim_questionnaire_response=false;
         akses.catatan_observasi_restrain_nonfarma=false;
         akses.catatan_observasi_ventilator=false;
         akses.catatan_anestesi_sedasi=false;
@@ -5769,6 +5773,7 @@ public final class akses {
     public static boolean getskrining_kesehatan_gigi_mulut_remaja(){return akses.skrining_kesehatan_gigi_mulut_remaja;}
     public static boolean getpenilaian_awal_keperawatan_ranap_bayi(){return akses.penilaian_awal_keperawatan_ranap_bayi;}
     public static boolean getbooking_mcu_perusahaan(){return akses.booking_mcu_perusahaan;}
+    public static boolean getsatu_sehat_kirim_questionnaire_response(){return akses.satu_sehat_kirim_questionnaire_response;}
     public static boolean getcatatan_observasi_restrain_nonfarma(){return akses.catatan_observasi_restrain_nonfarma;}
     public static boolean getcatatan_observasi_ventilator(){return akses.catatan_observasi_ventilator;}
     public static boolean getcatatan_anestesi_sedasi(){return akses.catatan_anestesi_sedasi;}
