@@ -207,10 +207,10 @@ public class DlgKamarInap extends javax.swing.JDialog {
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private Date date = new Date();
     private String now=dateFormat.format(date),kmr="",key="",tglmasuk,jammasuk,kd_pj,KUNCIDOKTERRANAP="",
-            hariawal="",pilihancetak="",aktifkan_hapus_data_salah="",terbitsep="",namadokter="";
+            hariawal="",pilihancetak="",aktifkan_hapus_data_salah="",terbitsep="",namadokter="",sepranap="",seppeserta="";
     private PreparedStatement ps,pssetjam,pscaripiutang,psdiagnosa,psibu,psanak,pstarif,psdpjp,pscariumur;
     private ResultSet rs,rs2,rssetjam;
-    private int i,row=0;
+    private int i,adasepranap=0,tidakadasepranap=0,adaseppeserta=0,tidakadaseppeserta=0,row=0;
     private double lama=0,persenbayi=0,hargakamar=0;
     private String gabungkan="",norawatgabung="",kamaryangdigabung="",dokterranap="",bangsal="",diagnosa_akhir="",namakamar="",umur="0",sttsumur="Th",order="order by bangsal.nm_bangsal,kamar_inap.tgl_masuk,kamar_inap.jam_masuk";
 
@@ -224,7 +224,7 @@ public class DlgKamarInap extends javax.swing.JDialog {
         tabMode=new DefaultTableModel(null,new Object[]{
             "No.Rawat","Nomer RM","Nama Pasien","Alamat Pasien","Penanggung Jawab","Hubungan P.J.","Jenis Bayar","Kamar","Tarif Kamar",
             "Diagnosa Awal","Diagnosa Akhir","Tgl.Masuk","Jam Masuk","Tgl.Keluar","Jam Keluar",
-            "Ttl.Biaya","Stts.Pulang","Lama","Dokter P.J.","Kamar","Status Bayar","Agama"
+            "Ttl.Biaya","Stts.Pulang","Lama","Dokter P.J.","Kamar","Status Bayar","Agama","No. SEP", "Peserta"
             }){
               @Override public boolean isCellEditable(int rowIndex, int colIndex){return false;}
         };
@@ -278,6 +278,10 @@ public class DlgKamarInap extends javax.swing.JDialog {
                 column.setMinWidth(0);
                 column.setMaxWidth(0);
             }else if(i==21){
+                column.setPreferredWidth(60);
+            }else if(i==22){
+                column.setPreferredWidth(60);
+            }else if(i==23){
                 column.setPreferredWidth(60);
             }
         }
@@ -17609,13 +17613,25 @@ private void MnCatatanTerapiCairanActionPerformed(java.awt.event.ActionEvent evt
             try {
                 rs=ps.executeQuery();
                 while(rs.next()){
+                    sepranap=Sequel.cariIsi("select if(count(bridging_sep.no_rawat)>0,bridging_sep.no_sep,'Tidak Ada') from bridging_sep where bridging_sep.no_rawat=?",rs.getString("no_rawat"));
+                    seppeserta=Sequel.cariIsi("select if(count(bridging_sep.no_rawat)>0,bridging_sep.peserta,'Tidak Ada') from bridging_sep where bridging_sep.no_rawat=?",rs.getString("no_rawat"));
+                    if(sepranap.equals("Ada")){
+                        adasepranap++;
+                    }else{
+                        tidakadasepranap++;
+                    }
+                    if(seppeserta.equals("Ada")){
+                        adaseppeserta++;
+                    }else{
+                        tidakadaseppeserta++;
+                    }
                     tabMode.addRow(new String[]{
                         rs.getString("no_rawat"),rs.getString("no_rkm_medis"),rs.getString("nm_pasien")+" ("+rs.getString("umur")+")",
                         rs.getString("alamat"),rs.getString("p_jawab"),rs.getString("hubunganpj"),rs.getString("png_jawab"),
                         rs.getString("kamar"),Valid.SetAngka(rs.getDouble("trf_kamar")),rs.getString("diagnosa_awal"),
                         rs.getString("diagnosa_akhir"),rs.getString("tgl_masuk"),rs.getString("jam_masuk"),rs.getString("tgl_keluar"),
                         rs.getString("jam_keluar"),Valid.SetAngka(rs.getDouble("ttl_biaya")),rs.getString("stts_pulang"),
-                        rs.getString("lama"),rs.getString("nm_dokter"),rs.getString("kd_kamar"),rs.getString("status_bayar"),rs.getString("agama")
+                        rs.getString("lama"),rs.getString("nm_dokter"),rs.getString("kd_kamar"),rs.getString("status_bayar"),rs.getString("agama"),sepranap,seppeserta
                     });
                     psanak=koneksi.prepareStatement(
                         "select pasien.no_rkm_medis,pasien.nm_pasien,ranap_gabung.no_rawat2,concat(reg_periksa.umurdaftar,' ',reg_periksa.sttsumur)as umur,pasien.no_peserta, "+
