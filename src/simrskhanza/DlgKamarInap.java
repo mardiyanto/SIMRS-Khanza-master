@@ -186,6 +186,8 @@ import surat.SuratPersetujuanUmum;
 import surat.SuratPulangAtasPermintaanSendiri;
 import surat.SuratSakit;
 import surat.SuratSakitPihak2;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  *
@@ -208,7 +210,7 @@ public class DlgKamarInap extends javax.swing.JDialog {
     private Date date = new Date();
     private String now=dateFormat.format(date),kmr="",key="",tglmasuk,jammasuk,kd_pj,KUNCIDOKTERRANAP="",
             hariawal="",pilihancetak="",aktifkan_hapus_data_salah="",terbitsep="",namadokter="",sepranap="",seppeserta="";
-    private PreparedStatement ps,pssetjam,pscaripiutang,psdiagnosa,psibu,psanak,pstarif,psdpjp,pscariumur;
+    private PreparedStatement ps,ps2,pssetjam,pscaripiutang,psdiagnosa,psibu,psanak,pstarif,psdpjp,pscariumur;
     private ResultSet rs,rs2,rssetjam;
     private int i,adasepranap=0,tidakadasepranap=0,adaseppeserta=0,tidakadaseppeserta=0,row=0;
     private double lama=0,persenbayi=0,hargakamar=0;
@@ -5802,7 +5804,40 @@ public class DlgKamarInap extends javax.swing.JDialog {
         cmbStatusBayar.setName("cmbStatusBayar"); // NOI18N
         cmbStatusBayar.setPreferredSize(new java.awt.Dimension(120, 23));
         panelGlass9.add(cmbStatusBayar);
-
+        
+        //TAMBGAKAN NO SEP TAMPIL ATAS
+	nomorsep = new widget.Label();
+        nomorsep.setText("No. SEP : ");
+        nomorsep.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOIl8N
+        nomorsep.setName("antrianpasien");
+        nomorsep.setPreferredSize(new java.awt.Dimension(120, 23));
+        panelGlass9.add(nomorsep);
+        
+        nosep = new widget.Label();
+        nosep.setForeground(new java.awt.Color(51, 51, 255));
+        nosep.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        nosep.setText("No. SEP");
+        nosep.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOIl8N
+        nosep.setName("nosep");
+        panelGlass9.add(nosep);
+        //AKHIR TAMBAHAN NO SEP ATAS
+        
+        //TAMBAHAN AWAL BILING TOTAL
+	bilingtotal = new widget.Label();
+        bilingtotal.setText("BIL. TOTAL : ");
+        bilingtotal.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOIl8N
+        bilingtotal.setName("antrianpasien");
+        bilingtotal.setPreferredSize(new java.awt.Dimension(120, 23));
+        panelGlass9.add(bilingtotal);
+        
+        biltotal = new widget.Label();
+        biltotal.setForeground(new java.awt.Color(51, 51, 255));
+        biltotal.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        biltotal.setText("BILING. TOTAL");
+        biltotal.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOIl8N
+        biltotal.setName("biltotal");
+        panelGlass9.add(biltotal);
+        //AKHIR TAMBAHAN BILING TOTAL
         internalFrame1.add(panelGlass9, java.awt.BorderLayout.PAGE_START);
 
         getContentPane().add(internalFrame1, java.awt.BorderLayout.CENTER);
@@ -17570,6 +17605,7 @@ private void MnCatatanTerapiCairanActionPerformed(java.awt.event.ActionEvent evt
                                   MnHasilEndoskopiHidung,MnHasilEndoskopiTelinga,MnPenilaianAwalKeperawatanRanapNeonatus,MnPenilaianPasienImunitasRendah,MnCatatanKeseimbanganCairan,MnCatatanObservasiCHBP,MnCatatanObservasiInduksiPersalinan,MnPermintaanKonsultasiMedik,
                                   MnDataOperasi,MnPenilaianAwalKeperawatanRanapBayiAnak,MnCatatanObservasiRestrainNonFarmakologi,MnCatatanObservasiVentilator,MnCatatanAnastesiSedasi,MnChecklistPemberianFibrinolitik;
     private javax.swing.JMenu MnHasilUSG,MnHasilEndoskopi,MnCatatanObservasi;
+    private widget.Label nomorsep,nosep,biltotal,bilingtotal;
     
     private void tampil() {
         if(R1.isSelected()==true){
@@ -17727,6 +17763,45 @@ private void MnCatatanTerapiCairanActionPerformed(java.awt.event.ActionEvent evt
             TOut.setText(tbKamIn.getValueAt(tbKamIn.getSelectedRow(),13).toString());
             ttlbiaya.setText(tbKamIn.getValueAt(tbKamIn.getSelectedRow(),15).toString());
             cmbStatus.setSelectedItem(tbKamIn.getValueAt(tbKamIn.getSelectedRow(),16).toString());
+            // Lakukan perhitungan total biaya
+double totalBiaya = Sequel.cariIsiAngka(
+    "SELECT " +
+    "IFNULL(SUM(biaya), 0) + " +
+    "IFNULL((SELECT SUM(biaya_item) FROM detail_periksa_lab WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(biaya) FROM periksa_radiologi WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(biayaoperator1 + biayaoperator2 + biayaoperator3 + biayaasisten_operator1 + biayaasisten_operator2 + " +
+    "biayaasisten_operator3 + biayainstrumen + biayadokter_anak + biayaperawaat_resusitas + biayadokter_anestesi + " +
+    "biayaasisten_anestesi + biayaasisten_anestesi2 + biayabidan + biayabidan2 + biayabidan3 + biayaperawat_luar + biayaalat + " +
+    "biayasewaok + akomodasi + bagian_rs + biaya_omloop + biaya_omloop2 + biaya_omloop3 + biaya_omloop4 + biaya_omloop5 + " +
+    "biayasarpras + biaya_dokter_pjanak + biaya_dokter_umum) FROM operasi WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(total) FROM detail_pemberian_obat WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(besar_tagihan) FROM tagihan_obat_langsung WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(hargasatuan * jumlah) FROM beri_obat_operasi WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_inap_dr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_inap_drpr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_inap_pr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_jl_dr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_jl_drpr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_jl_pr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(besar_biaya) FROM tambahan_biaya WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(besar_pengurangan) FROM pengurangan_biaya WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(ttl_biaya) FROM kamar_inap WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(biaya_sekali.besar_biaya) FROM biaya_sekali " +
+    "INNER JOIN kamar_inap ON kamar_inap.kd_kamar = biaya_sekali.kd_kamar WHERE kamar_inap.no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(biaya_harian.jml * biaya_harian.besar_biaya * kamar_inap.lama) FROM kamar_inap " +
+    "INNER JOIN biaya_harian ON kamar_inap.kd_kamar = biaya_harian.kd_kamar WHERE kamar_inap.no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(subtotal) FROM detreturjual WHERE no_retur_jual LIKE '%" + norawat.getText() + "%'), 0) + " +
+    "IFNULL((SELECT SUM(total) FROM resep_pulang WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+    "IFNULL((SELECT SUM(besar_deposit) FROM deposit WHERE no_rawat = '" + norawat.getText() + "'), 0) " +
+    "FROM periksa_lab WHERE no_rawat = '" + norawat.getText() + "'"
+);
+
+// Format hasil sebagai Rupiah
+NumberFormat rupiahFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+String hasilRupiah = rupiahFormat.format(totalBiaya);
+// Tampilkan hasil di nosep
+biltotal.setText(hasilRupiah);
+  nosep.setText(Sequel.cariIsi("select bridging_sep.no_sep from bridging_sep where no_rawat='"+norawat.getText()+"' and bridging_sep.jnspelayanan='1'"));
         }
     }
 

@@ -544,7 +544,8 @@ public class frmUtama extends javax.swing.JFrame {
                                 }
                                 
                                 if(task4.equals("Sudah")&&task5.equals("")){
-                                    datajam=Sequel.cariIsi("select if(kembali='0000-00-00 00:00:00','',kembali) from mutasi_berkas where mutasi_berkas.no_rawat=?",rs.getString("no_rawat"));
+                                      datajam=Sequel.cariIsi("select concat(resep_obat.tgl_peresepan,' ',resep_obat.jam_peresepan) from resep_obat where resep_obat.tgl_peresepan<>'0000-00-00' and resep_obat.status='ralan' and resep_obat.no_rawat=?",rs.getString("no_rawat"));
+//                                    datajam=Sequel.cariIsi("select if(kembali='0000-00-00 00:00:00','',kembali) from mutasi_berkas where mutasi_berkas.no_rawat=?",rs.getString("no_rawat"));
                                     if(datajam.equals("")){
                                         datajam=Sequel.cariIsi("select now() from reg_periksa where reg_periksa.stts='Sudah' and reg_periksa.no_rawat=?",rs.getString("no_rawat"));
                                     }
@@ -997,7 +998,8 @@ public class frmUtama extends javax.swing.JFrame {
                                             }
 
                                             if(task4.equals("Sudah")&&task5.equals("")){
-                                                datajam=Sequel.cariIsi("select if(mutasi_berkas.kembali='0000-00-00 00:00:00','',mutasi_berkas.kembali) from mutasi_berkas where mutasi_berkas.no_rawat=?",rs.getString("no_rawat"));
+//                                              datajam=Sequel.cariIsi("select if(mutasi_berkas.kembali='0000-00-00 00:00:00','',mutasi_berkas.kembali) from mutasi_berkas where mutasi_berkas.no_rawat=?",rs.getString("no_rawat"));
+                                                datajam=Sequel.cariIsi("select concat(resep_obat.tgl_peresepan,' ',resep_obat.jam_peresepan) from resep_obat where resep_obat.tgl_peresepan<>'0000-00-00' and resep_obat.status='ralan' and resep_obat.no_rawat=?",rs.getString("no_rawat"));
                                                 if(datajam.equals("")){
                                                     datajam=Sequel.cariIsi("select now() from reg_periksa where reg_periksa.stts='Sudah' and reg_periksa.no_rawat=?",rs.getString("no_rawat"));
                                                 }
