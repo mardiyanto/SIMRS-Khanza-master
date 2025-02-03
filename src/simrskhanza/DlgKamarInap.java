@@ -5838,6 +5838,38 @@ public class DlgKamarInap extends javax.swing.JDialog {
         biltotal.setName("biltotal");
         panelGlass9.add(biltotal);
         //AKHIR TAMBAHAN BILING TOTAL
+        
+        //TAMBAHAN AWAL PAGU TOTAL
+	sisapagu = new widget.Label();
+        sisapagu.setText("SISA PAGU: ");
+        sisapagu.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOIl8N
+        sisapagu.setName("antrianpasien");
+        sisapagu.setPreferredSize(new java.awt.Dimension(120, 23));
+        panelGlass9.add(sisapagu);
+        
+        sisapagutotal = new widget.Label();
+        sisapagutotal.setForeground(new java.awt.Color(255, 0, 0));
+        sisapagutotal.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        sisapagutotal.setText("SISA PAGU");
+        sisapagutotal.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOIl8N
+        sisapagutotal.setName("sisapagutotal");
+        panelGlass9.add(sisapagutotal);
+        
+	pagu = new widget.Label();
+        pagu.setText("PAGU: ");
+        pagu.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOIl8N
+        pagu.setName("antrianpasien");
+        pagu.setPreferredSize(new java.awt.Dimension(120, 23));
+        panelGlass9.add(pagu);
+        
+        pagutotal = new widget.Label();
+        pagutotal.setForeground(new java.awt.Color(51, 51, 255));
+        pagutotal.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        pagutotal.setText("PAGU");
+        pagutotal.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOIl8N
+        pagutotal.setName("pagutotal");
+        panelGlass9.add(pagutotal);
+        //AKHIR TAMBAHAN PAGU TOTAL
         internalFrame1.add(panelGlass9, java.awt.BorderLayout.PAGE_START);
 
         getContentPane().add(internalFrame1, java.awt.BorderLayout.CENTER);
@@ -17605,7 +17637,7 @@ private void MnCatatanTerapiCairanActionPerformed(java.awt.event.ActionEvent evt
                                   MnHasilEndoskopiHidung,MnHasilEndoskopiTelinga,MnPenilaianAwalKeperawatanRanapNeonatus,MnPenilaianPasienImunitasRendah,MnCatatanKeseimbanganCairan,MnCatatanObservasiCHBP,MnCatatanObservasiInduksiPersalinan,MnPermintaanKonsultasiMedik,
                                   MnDataOperasi,MnPenilaianAwalKeperawatanRanapBayiAnak,MnCatatanObservasiRestrainNonFarmakologi,MnCatatanObservasiVentilator,MnCatatanAnastesiSedasi,MnChecklistPemberianFibrinolitik;
     private javax.swing.JMenu MnHasilUSG,MnHasilEndoskopi,MnCatatanObservasi;
-    private widget.Label nomorsep,nosep,biltotal,bilingtotal;
+    private widget.Label nomorsep,nosep,biltotal,bilingtotal,pagu,pagutotal,sisapagu,sisapagutotal;
     
     private void tampil() {
         if(R1.isSelected()==true){
@@ -17796,14 +17828,16 @@ double totalBiaya = Sequel.cariIsiAngka(
     "FROM periksa_lab WHERE no_rawat = '" + norawat.getText() + "'"
 );
 
-// Format hasil sebagai Rupiah
-NumberFormat rupiahFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
-String hasilRupiah = rupiahFormat.format(totalBiaya);
-// Tampilkan hasil di nosep
-biltotal.setText(hasilRupiah);
-  nosep.setText(Sequel.cariIsi("select bridging_sep.no_sep from bridging_sep where no_rawat='"+norawat.getText()+"' and bridging_sep.jnspelayanan='1'"));
+    // Format hasil sebagai Rupiah
+    NumberFormat rupiahFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+    String hasilRupiah = rupiahFormat.format(totalBiaya);
+    // Tampilkan hasil di nosep
+    biltotal.setText(hasilRupiah);
+    nosep.setText(Sequel.cariIsi("select bridging_sep.no_sep from bridging_sep where no_rawat='"+norawat.getText()+"' and bridging_sep.jnspelayanan='1'"));
+    sisapagutotal.setText(hasilRupiah);
+    pagutotal.setText(hasilRupiah);
         }
-    }
+}
 
     
     private void isKmr() {          
