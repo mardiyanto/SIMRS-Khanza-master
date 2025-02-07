@@ -226,7 +226,7 @@ public class DlgKamarInap extends javax.swing.JDialog {
         tabMode=new DefaultTableModel(null,new Object[]{
             "No.Rawat","Nomer RM","Nama Pasien","Alamat Pasien","Penanggung Jawab","Hubungan P.J.","Jenis Bayar","Kamar","Tarif Kamar",
             "Diagnosa Awal","Diagnosa Akhir","Tgl.Masuk","Jam Masuk","Tgl.Keluar","Jam Keluar",
-            "Ttl.Biaya","Stts.Pulang","Lama","Dokter P.J.","Kamar","Status Bayar","Agama","No. SEP", "Peserta"
+            "Ttl.Biaya","Stts.Pulang","Lama","Dokter P.J.","Kamar","Status Bayar","Agama","Pagu","No. SEP", "Peserta"
             }){
               @Override public boolean isCellEditable(int rowIndex, int colIndex){return false;}
         };
@@ -5633,7 +5633,9 @@ public class DlgKamarInap extends javax.swing.JDialog {
         panelCari.setName("panelCari"); // NOI18N
         panelCari.setPreferredSize(new java.awt.Dimension(44, 43));
         panelCari.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 4, 9));
-
+        
+       
+        
         R1.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.pink));
         buttonGroup1.add(R1);
         R1.setSelected(true);
@@ -5736,7 +5738,24 @@ public class DlgKamarInap extends javax.swing.JDialog {
             }
         });
         panelCari.add(DTPCari4);
+        
+        // Menambahkan label No. SEP di sebelah komponen cari
+        nomorsep = new widget.Label();
+        nomorsep.setText("No. SEP : ");
+        nomorsep.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOIl8N
+        nomorsep.setName("antrianpasien");
+        nomorsep.setPreferredSize(new java.awt.Dimension(120, 23));
+        panelCari.add(nomorsep);
 
+        // Menambahkan label untuk No. SEP di samping label "No. SEP"
+        nosep = new widget.Label();
+        nosep.setForeground(new java.awt.Color(51, 51, 255));
+        nosep.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        nosep.setText("No. SEP");
+        nosep.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOIl8N
+        nosep.setName("nosep");
+        panelCari.add(nosep);
+        
         PanelCariUtama.add(panelCari, java.awt.BorderLayout.PAGE_START);
 
         internalFrame1.add(PanelCariUtama, java.awt.BorderLayout.PAGE_END);
@@ -5805,22 +5824,6 @@ public class DlgKamarInap extends javax.swing.JDialog {
         cmbStatusBayar.setPreferredSize(new java.awt.Dimension(120, 23));
         panelGlass9.add(cmbStatusBayar);
         
-        //TAMBGAKAN NO SEP TAMPIL ATAS
-	nomorsep = new widget.Label();
-        nomorsep.setText("No. SEP : ");
-        nomorsep.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOIl8N
-        nomorsep.setName("antrianpasien");
-        nomorsep.setPreferredSize(new java.awt.Dimension(120, 23));
-        panelGlass9.add(nomorsep);
-        
-        nosep = new widget.Label();
-        nosep.setForeground(new java.awt.Color(51, 51, 255));
-        nosep.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        nosep.setText("No. SEP");
-        nosep.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOIl8N
-        nosep.setName("nosep");
-        panelGlass9.add(nosep);
-        //AKHIR TAMBAHAN NO SEP ATAS
         
         //TAMBAHAN AWAL BILING TOTAL
 	bilingtotal = new widget.Label();
@@ -17681,6 +17684,56 @@ private void MnCatatanTerapiCairanActionPerformed(java.awt.event.ActionEvent evt
             try {
                 rs=ps.executeQuery();
                 while(rs.next()){
+                // Menghitung total biaya berdasarkan no_rawat dari ResultSet
+                double totalBiaya = Sequel.cariIsiAngka(
+                    "SELECT " +
+                    "IFNULL(SUM(biaya), 0) + " +
+                    "IFNULL((SELECT SUM(biaya_item) FROM detail_periksa_lab WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(biaya) FROM periksa_radiologi WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(biayaoperator1 + biayaoperator2 + biayaoperator3 + biayaasisten_operator1 + biayaasisten_operator2 + " +
+                    "biayaasisten_operator3 + biayainstrumen + biayadokter_anak + biayaperawaat_resusitas + biayadokter_anestesi + " +
+                    "biayaasisten_anestesi + biayaasisten_anestesi2 + biayabidan + biayabidan2 + biayabidan3 + biayaperawat_luar + biayaalat + " +
+                    "biayasewaok + akomodasi + bagian_rs + biaya_omloop + biaya_omloop2 + biaya_omloop3 + biaya_omloop4 + biaya_omloop5 + " +
+                    "biayasarpras + biaya_dokter_pjanak + biaya_dokter_umum) FROM operasi WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(total) FROM detail_pemberian_obat WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(besar_tagihan) FROM tagihan_obat_langsung WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(hargasatuan * jumlah) FROM beri_obat_operasi WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_inap_dr WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_inap_drpr WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_inap_pr WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_jl_dr WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_jl_drpr WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_jl_pr WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(besar_biaya) FROM tambahan_biaya WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(besar_pengurangan) FROM pengurangan_biaya WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(ttl_biaya) FROM kamar_inap WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(biaya_sekali.besar_biaya) FROM biaya_sekali " +
+                    "INNER JOIN kamar_inap ON kamar_inap.kd_kamar = biaya_sekali.kd_kamar WHERE kamar_inap.no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(biaya_harian.jml * biaya_harian.besar_biaya * kamar_inap.lama) FROM kamar_inap " +
+                    "INNER JOIN biaya_harian ON kamar_inap.kd_kamar = biaya_harian.kd_kamar WHERE kamar_inap.no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(subtotal) FROM detreturjual WHERE no_retur_jual LIKE '%" + rs.getString("no_rawat") + "%'), 0) + " +
+                    "IFNULL((SELECT SUM(total) FROM resep_pulang WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) + " +
+                    "IFNULL((SELECT SUM(besar_deposit) FROM deposit WHERE no_rawat = '" + rs.getString("no_rawat") + "'), 0) " +
+                    "FROM periksa_lab WHERE no_rawat = '" + rs.getString("no_rawat") + "'"
+                );
+                // Format hasil sebagai Rupiah
+                NumberFormat rupiahFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+                String hasilRupiah = rupiahFormat.format(totalBiaya);
+                  // Menambahkan baris ke dalam tabel
+                    double perkiraan = Sequel.cariIsiAngka("SELECT tarif FROM perkiraan_biaya_ranap WHERE no_rawat = '" + rs.getString("no_rawat") + "'");
+                    // Menentukan nilai rugipagu
+                    String rugipagu = "Belum Ada Diagnosis"; // Default jika tarif tidak ditemukan
+                    if (perkiraan > 0) {
+                        // Menghitung rugiakhir jika tarif ditemukan
+                        double rugiakhir = perkiraan - totalBiaya;
+
+                        // Menghitung persentase kerugian
+                        double perkiraanRugi = (rugiakhir / perkiraan) * 100;
+
+                        // Format kerugian dalam persen
+                        rugipagu = String.format("%.2f%%", perkiraanRugi); 
+                    }
+    
                     sepranap=Sequel.cariIsi("select if(count(bridging_sep.no_rawat)>0,bridging_sep.no_sep,'Tidak Ada') from bridging_sep where bridging_sep.no_rawat=?",rs.getString("no_rawat"));
                     seppeserta=Sequel.cariIsi("select if(count(bridging_sep.no_rawat)>0,bridging_sep.peserta,'Tidak Ada') from bridging_sep where bridging_sep.no_rawat=?",rs.getString("no_rawat"));
                     if(sepranap.equals("Ada")){
@@ -17693,14 +17746,36 @@ private void MnCatatanTerapiCairanActionPerformed(java.awt.event.ActionEvent evt
                     }else{
                         tidakadaseppeserta++;
                     }
-                    tabMode.addRow(new String[]{
-                        rs.getString("no_rawat"),rs.getString("no_rkm_medis"),rs.getString("nm_pasien")+" ("+rs.getString("umur")+")",
-                        rs.getString("alamat"),rs.getString("p_jawab"),rs.getString("hubunganpj"),rs.getString("png_jawab"),
-                        rs.getString("kamar"),Valid.SetAngka(rs.getDouble("trf_kamar")),rs.getString("diagnosa_awal"),
-                        rs.getString("diagnosa_akhir"),rs.getString("tgl_masuk"),rs.getString("jam_masuk"),rs.getString("tgl_keluar"),
-                        rs.getString("jam_keluar"),Valid.SetAngka(rs.getDouble("ttl_biaya")),rs.getString("stts_pulang"),
-                        rs.getString("lama"),rs.getString("nm_dokter"),rs.getString("kd_kamar"),rs.getString("status_bayar"),rs.getString("agama"),sepranap,seppeserta
+
+                    // Menambahkan baris ke dalam tabel
+                    tabMode.addRow(new String[] {
+                        rs.getString("no_rawat"), // No. Rawat
+                        rs.getString("no_rkm_medis"), // No. Rekam Medis
+                        rs.getString("nm_pasien") + " (" + rs.getString("umur") + ")", // Nama Pasien dan Umur
+                        rs.getString("alamat"), // Alamat
+                        rs.getString("p_jawab"), // Penanggung Jawab
+                        rs.getString("hubunganpj"), // Hubungan Penanggung Jawab
+                        rs.getString("png_jawab"), // Penanggung Jawab
+                        rs.getString("kamar"), // Kamar
+                        Valid.SetAngka(rs.getDouble("trf_kamar")), // Tarif Kamar
+                        rs.getString("diagnosa_awal"), // Diagnosa Awal
+                        rs.getString("diagnosa_akhir"), // Diagnosa Akhir
+                        rs.getString("tgl_masuk"), // Tanggal Masuk
+                        rs.getString("jam_masuk"), // Jam Masuk
+                        rs.getString("tgl_keluar"), // Tanggal Keluar
+                        rs.getString("jam_keluar"), // Jam Keluar
+                        Valid.SetAngka(rs.getDouble("ttl_biaya")), // Total Biaya
+                        rs.getString("stts_pulang"), // Status Pulang
+                        rs.getString("lama"), // Lama Rawat
+                        rs.getString("nm_dokter"), // Nama Dokter
+                        rs.getString("kd_kamar"), // Kode Kamar
+                        rs.getString("status_bayar"), // Status Bayar
+                        rs.getString("agama"), // Agama
+                        rugipagu, // Total Biaya dalam Rupiah
+                        sepranap, // Separator Rawat Inap (jika ada)
+                        seppeserta // Separator Peserta (jika ada)
                     });
+
                     psanak=koneksi.prepareStatement(
                         "select pasien.no_rkm_medis,pasien.nm_pasien,ranap_gabung.no_rawat2,concat(reg_periksa.umurdaftar,' ',reg_periksa.sttsumur)as umur,pasien.no_peserta, "+
                         "concat(pasien.alamatpj,', ',pasien.kelurahanpj,', ',pasien.kecamatanpj,', ',pasien.kabupatenpj) as alamat "+
@@ -17831,11 +17906,52 @@ double totalBiaya = Sequel.cariIsiAngka(
     // Format hasil sebagai Rupiah
     NumberFormat rupiahFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
     String hasilRupiah = rupiahFormat.format(totalBiaya);
-    // Tampilkan hasil di nosep
+    // Tampilkan hasil biling 
     biltotal.setText(hasilRupiah);
-    nosep.setText(Sequel.cariIsi("select bridging_sep.no_sep from bridging_sep where no_rawat='"+norawat.getText()+"' and bridging_sep.jnspelayanan='1'"));
-    sisapagutotal.setText(hasilRupiah);
-    pagutotal.setText(hasilRupiah);
+     // Ambil nilai diagnosaakhir dan diagnosaawal
+        String diagnosaakhir = tbKamIn.getValueAt(tbKamIn.getSelectedRow(), 10).toString();
+        String diagnosaawal = tbKamIn.getValueAt(tbKamIn.getSelectedRow(), 9).toString();
+
+       // Bersihkan kode diagnosa dari karakter yang tidak diinginkan (misalnya koma)
+        diagnosaakhir = diagnosaakhir.replace(",", "").trim(); // Hapus koma dan spasi
+        diagnosaawal = diagnosaawal.replace(",", "").trim();   // Hapus koma dan spasi
+
+        // Gunakan diagnosaakhir jika tidak kosong, jika tidak, gunakan diagnosaawal
+        String kodeDiagnosa = diagnosaakhir.isEmpty() ? diagnosaawal : diagnosaakhir;
+
+
+        // Query untuk mengambil tarif ICD10 DARI TABEL M-ICD10 NOTE; SILAHKAN AKTIFKAN
+        // double tarifICD10 = Sequel.cariIsiAngka("SELECT tarif FROM m_icd10 WHERE kd_icd = '" + kodeDiagnosa + "'");
+        // String hasilicd = rupiahFormat.format(tarifICD10);
+         // Query untuk mengambil tarif BRIGING E-KLAIM BACKUP
+         double tarifICD10 = Sequel.cariIsiAngka("SELECT tarif FROM perkiraan_biaya_ranap WHERE no_rawat = '" + norawat.getText() + "'");
+         String hasilicd = rupiahFormat.format(tarifICD10);
+      
+
+        // Hitung rugiakhir
+        double rugiakhir = tarifICD10 - totalBiaya;
+        // Hitung persentase rugi
+        double persentaseRugi = (rugiakhir / tarifICD10) * 100;
+
+        // Tentukan warna berdasarkan persentase rugi
+       if (persentaseRugi >= 50) {
+            sisapagutotal.setForeground(new java.awt.Color(0, 255, 0));  // Warna hijau
+        } else if (persentaseRugi >= 30) {
+            sisapagutotal.setForeground(new java.awt.Color(255, 255, 0));  // Warna kuning
+        } else if (persentaseRugi >= 20) {
+            sisapagutotal.setForeground(new java.awt.Color(255, 0, 0));  // Warna merah
+        } else if (persentaseRugi >= 10) {
+            sisapagutotal.setForeground(new java.awt.Color(255, 0, 0));  // Warna merah
+        } else {
+            sisapagutotal.setForeground(new java.awt.Color(165, 42, 42)); // This sets the color to brown
+        }
+
+        // Tampilkan rugiakhir di sisapagutotal
+        sisapagutotal.setText(rupiahFormat.format(rugiakhir));
+        // Tampilkan NO SEP PASIEN BPJS
+        nosep.setText(Sequel.cariIsi("select bridging_sep.no_sep from bridging_sep where no_rawat='"+norawat.getText()+"' and bridging_sep.jnspelayanan='1'"));
+        // Tampilkan PAGU PASIEN BERDASARKAN DIAGNOSIS
+        pagutotal.setText(hasilicd);
         }
 }
 
