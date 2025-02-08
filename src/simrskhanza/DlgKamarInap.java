@@ -32,6 +32,7 @@ import laporan.DlgDiagnosaPenyakit;
 import informasi.InformasiAnalisaKamin;
 import keuangan.DlgKamar;
 import fungsi.WarnaTable;
+import fungsi.WarnaTableRanap;
 import fungsi.batasInput;
 import fungsi.koneksiDB;
 import fungsi.sekuel;
@@ -287,7 +288,7 @@ public class DlgKamarInap extends javax.swing.JDialog {
                 column.setPreferredWidth(60);
             }
         }
-        tbKamIn.setDefaultRenderer(Object.class, new WarnaTable());
+        tbKamIn.setDefaultRenderer(Object.class, new WarnaTableRanap());
 
         norawat.setDocument(new batasInput((byte)17).getKata(norawat));
         kdkamar.setDocument(new batasInput((byte)15).getKata(kdkamar));
@@ -17871,88 +17872,87 @@ private void MnCatatanTerapiCairanActionPerformed(java.awt.event.ActionEvent evt
             ttlbiaya.setText(tbKamIn.getValueAt(tbKamIn.getSelectedRow(),15).toString());
             cmbStatus.setSelectedItem(tbKamIn.getValueAt(tbKamIn.getSelectedRow(),16).toString());
             // Lakukan perhitungan total biaya
-double totalBiaya = Sequel.cariIsiAngka(
-    "SELECT " +
-    "IFNULL(SUM(biaya), 0) + " +
-    "IFNULL((SELECT SUM(biaya_item) FROM detail_periksa_lab WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(biaya) FROM periksa_radiologi WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(biayaoperator1 + biayaoperator2 + biayaoperator3 + biayaasisten_operator1 + biayaasisten_operator2 + " +
-    "biayaasisten_operator3 + biayainstrumen + biayadokter_anak + biayaperawaat_resusitas + biayadokter_anestesi + " +
-    "biayaasisten_anestesi + biayaasisten_anestesi2 + biayabidan + biayabidan2 + biayabidan3 + biayaperawat_luar + biayaalat + " +
-    "biayasewaok + akomodasi + bagian_rs + biaya_omloop + biaya_omloop2 + biaya_omloop3 + biaya_omloop4 + biaya_omloop5 + " +
-    "biayasarpras + biaya_dokter_pjanak + biaya_dokter_umum) FROM operasi WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(total) FROM detail_pemberian_obat WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(besar_tagihan) FROM tagihan_obat_langsung WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(hargasatuan * jumlah) FROM beri_obat_operasi WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_inap_dr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_inap_drpr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_inap_pr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_jl_dr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_jl_drpr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_jl_pr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(besar_biaya) FROM tambahan_biaya WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(besar_pengurangan) FROM pengurangan_biaya WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(ttl_biaya) FROM kamar_inap WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(biaya_sekali.besar_biaya) FROM biaya_sekali " +
-    "INNER JOIN kamar_inap ON kamar_inap.kd_kamar = biaya_sekali.kd_kamar WHERE kamar_inap.no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(biaya_harian.jml * biaya_harian.besar_biaya * kamar_inap.lama) FROM kamar_inap " +
-    "INNER JOIN biaya_harian ON kamar_inap.kd_kamar = biaya_harian.kd_kamar WHERE kamar_inap.no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(subtotal) FROM detreturjual WHERE no_retur_jual LIKE '%" + norawat.getText() + "%'), 0) + " +
-    "IFNULL((SELECT SUM(total) FROM resep_pulang WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
-    "IFNULL((SELECT SUM(besar_deposit) FROM deposit WHERE no_rawat = '" + norawat.getText() + "'), 0) " +
-    "FROM periksa_lab WHERE no_rawat = '" + norawat.getText() + "'"
-);
+            double totalBiaya = Sequel.cariIsiAngka(
+                "SELECT " +
+                "IFNULL(SUM(biaya), 0) + " +
+                "IFNULL((SELECT SUM(biaya_item) FROM detail_periksa_lab WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(biaya) FROM periksa_radiologi WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(biayaoperator1 + biayaoperator2 + biayaoperator3 + biayaasisten_operator1 + biayaasisten_operator2 + " +
+                "biayaasisten_operator3 + biayainstrumen + biayadokter_anak + biayaperawaat_resusitas + biayadokter_anestesi + " +
+                "biayaasisten_anestesi + biayaasisten_anestesi2 + biayabidan + biayabidan2 + biayabidan3 + biayaperawat_luar + biayaalat + " +
+                "biayasewaok + akomodasi + bagian_rs + biaya_omloop + biaya_omloop2 + biaya_omloop3 + biaya_omloop4 + biaya_omloop5 + " +
+                "biayasarpras + biaya_dokter_pjanak + biaya_dokter_umum) FROM operasi WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(total) FROM detail_pemberian_obat WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(besar_tagihan) FROM tagihan_obat_langsung WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(hargasatuan * jumlah) FROM beri_obat_operasi WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_inap_dr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_inap_drpr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_inap_pr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_jl_dr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_jl_drpr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(biaya_rawat) FROM rawat_jl_pr WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(besar_biaya) FROM tambahan_biaya WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(besar_pengurangan) FROM pengurangan_biaya WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(ttl_biaya) FROM kamar_inap WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(biaya_sekali.besar_biaya) FROM biaya_sekali " +
+                "INNER JOIN kamar_inap ON kamar_inap.kd_kamar = biaya_sekali.kd_kamar WHERE kamar_inap.no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(biaya_harian.jml * biaya_harian.besar_biaya * kamar_inap.lama) FROM kamar_inap " +
+                "INNER JOIN biaya_harian ON kamar_inap.kd_kamar = biaya_harian.kd_kamar WHERE kamar_inap.no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(subtotal) FROM detreturjual WHERE no_retur_jual LIKE '%" + norawat.getText() + "%'), 0) + " +
+                "IFNULL((SELECT SUM(total) FROM resep_pulang WHERE no_rawat = '" + norawat.getText() + "'), 0) + " +
+                "IFNULL((SELECT SUM(besar_deposit) FROM deposit WHERE no_rawat = '" + norawat.getText() + "'), 0) " +
+                "FROM periksa_lab WHERE no_rawat = '" + norawat.getText() + "'"
+            );
 
-    // Format hasil sebagai Rupiah
-    NumberFormat rupiahFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
-    String hasilRupiah = rupiahFormat.format(totalBiaya);
-    // Tampilkan hasil biling 
-    biltotal.setText(hasilRupiah);
-     // Ambil nilai diagnosaakhir dan diagnosaawal
-        String diagnosaakhir = tbKamIn.getValueAt(tbKamIn.getSelectedRow(), 10).toString();
-        String diagnosaawal = tbKamIn.getValueAt(tbKamIn.getSelectedRow(), 9).toString();
+            // Format hasil sebagai Rupiah
+            NumberFormat rupiahFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+            String hasilRupiah = rupiahFormat.format(totalBiaya);
+            // Tampilkan hasil biling 
+            biltotal.setText(hasilRupiah);
+             // Ambil nilai diagnosaakhir dan diagnosaawal
+                String diagnosaakhir = tbKamIn.getValueAt(tbKamIn.getSelectedRow(), 10).toString();
+                String diagnosaawal = tbKamIn.getValueAt(tbKamIn.getSelectedRow(), 9).toString();
 
-       // Bersihkan kode diagnosa dari karakter yang tidak diinginkan (misalnya koma)
-        diagnosaakhir = diagnosaakhir.replace(",", "").trim(); // Hapus koma dan spasi
-        diagnosaawal = diagnosaawal.replace(",", "").trim();   // Hapus koma dan spasi
+               // Bersihkan kode diagnosa dari karakter yang tidak diinginkan (misalnya koma)
+                diagnosaakhir = diagnosaakhir.replace(",", "").trim(); // Hapus koma dan spasi
+                diagnosaawal = diagnosaawal.replace(",", "").trim();   // Hapus koma dan spasi
 
-        // Gunakan diagnosaakhir jika tidak kosong, jika tidak, gunakan diagnosaawal
-        String kodeDiagnosa = diagnosaakhir.isEmpty() ? diagnosaawal : diagnosaakhir;
+                // Gunakan diagnosaakhir jika tidak kosong, jika tidak, gunakan diagnosaawal
+                String kodeDiagnosa = diagnosaakhir.isEmpty() ? diagnosaawal : diagnosaakhir;
 
 
-        // Query untuk mengambil tarif ICD10 DARI TABEL M-ICD10 NOTE; SILAHKAN AKTIFKAN
-        // double tarifICD10 = Sequel.cariIsiAngka("SELECT tarif FROM m_icd10 WHERE kd_icd = '" + kodeDiagnosa + "'");
-        // String hasilicd = rupiahFormat.format(tarifICD10);
-         // Query untuk mengambil tarif BRIGING E-KLAIM BACKUP
-         double tarifICD10 = Sequel.cariIsiAngka("SELECT tarif FROM perkiraan_biaya_ranap WHERE no_rawat = '" + norawat.getText() + "'");
-         String hasilicd = rupiahFormat.format(tarifICD10);
-      
+                // Query untuk mengambil tarif ICD10 DARI TABEL M-ICD10 NOTE; SILAHKAN AKTIFKAN
+                // double tarifICD10 = Sequel.cariIsiAngka("SELECT tarif FROM m_icd10 WHERE kd_icd = '" + kodeDiagnosa + "'");
+                // String hasilicd = rupiahFormat.format(tarifICD10);
+                 // Query untuk mengambil tarif BRIGING E-KLAIM BACKUP
+                 double tarifICD10 = Sequel.cariIsiAngka("SELECT tarif FROM perkiraan_biaya_ranap WHERE no_rawat = '" + norawat.getText() + "'");
+                 String hasilicd = rupiahFormat.format(tarifICD10);
 
-        // Hitung rugiakhir
-        double rugiakhir = tarifICD10 - totalBiaya;
-        // Hitung persentase rugi
-        double persentaseRugi = (rugiakhir / tarifICD10) * 100;
+                // Hitung rugiakhir
+                double rugiakhir = tarifICD10 - totalBiaya;
+                // Hitung persentase rugi
+                double persentaseRugi = (rugiakhir / tarifICD10) * 100;
 
-        // Tentukan warna berdasarkan persentase rugi
-       if (persentaseRugi >= 50) {
-            sisapagutotal.setForeground(new java.awt.Color(0, 255, 0));  // Warna hijau
-        } else if (persentaseRugi >= 30) {
-            sisapagutotal.setForeground(new java.awt.Color(255, 255, 0));  // Warna kuning
-        } else if (persentaseRugi >= 20) {
-            sisapagutotal.setForeground(new java.awt.Color(255, 0, 0));  // Warna merah
-        } else if (persentaseRugi >= 10) {
-            sisapagutotal.setForeground(new java.awt.Color(255, 0, 0));  // Warna merah
-        } else {
-            sisapagutotal.setForeground(new java.awt.Color(165, 42, 42)); // This sets the color to brown
-        }
+                // Tentukan warna berdasarkan persentase rugi
+               if (persentaseRugi >= 50) {
+                    sisapagutotal.setForeground(new java.awt.Color(0, 255, 0));  // Warna hijau
+                } else if (persentaseRugi >= 30) {
+                    sisapagutotal.setForeground(new java.awt.Color(255, 255, 0));  // Warna kuning
+                } else if (persentaseRugi >= 20) {
+                    sisapagutotal.setForeground(new java.awt.Color(255, 0, 0));  // Warna merah
+                } else if (persentaseRugi >= 10) {
+                    sisapagutotal.setForeground(new java.awt.Color(255, 0, 0));  // Warna merah
+                } else {
+                    sisapagutotal.setForeground(new java.awt.Color(165, 42, 42)); // This sets the color to brown
+                }
 
-        // Tampilkan rugiakhir di sisapagutotal
-        sisapagutotal.setText(rupiahFormat.format(rugiakhir));
-        // Tampilkan NO SEP PASIEN BPJS
-        nosep.setText(Sequel.cariIsi("select bridging_sep.no_sep from bridging_sep where no_rawat='"+norawat.getText()+"' and bridging_sep.jnspelayanan='1'"));
-        // Tampilkan PAGU PASIEN BERDASARKAN DIAGNOSIS
-        pagutotal.setText(hasilicd);
-        }
+                // Tampilkan rugiakhir di sisapagutotal
+                sisapagutotal.setText(rupiahFormat.format(rugiakhir));
+                // Tampilkan NO SEP PASIEN BPJS
+                nosep.setText(Sequel.cariIsi("select bridging_sep.no_sep from bridging_sep where no_rawat='"+norawat.getText()+"' and bridging_sep.jnspelayanan='1'"));
+                // Tampilkan PAGU PASIEN BERDASARKAN DIAGNOSIS
+                pagutotal.setText(hasilicd);
+                }
 }
 
     
